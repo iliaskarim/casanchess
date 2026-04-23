@@ -63,27 +63,20 @@ Outputs are generated under:
 - `artifacts/apple/libcasanchess-maccatalyst.a`
 - `artifacts/apple/casanchess.xcframework`
 
-## iOS smoke Xcode project
-Generate and build the sample iOS smoke app project:
+## Apple smoke Xcode project
+Use the committed sample iOS + macOS smoke app project:
 
 ```sh
 ./scripts/generate-xcode-smoke.sh
 ```
 
-The generated project is:
-- `examples/xcode-smoke-ios/build/CasanchessSmoke.xcodeproj`
+The projects are:
+- `examples/xcode-smoke/CasanchessSmoke iOS.xcodeproj`
+- `examples/xcode-smoke/CasanchessSmoke macOS.xcodeproj`
 
-## macOS smoke Xcode project
-Generate and build the sample macOS smoke app project:
-
-```sh
-./scripts/generate-xcode-smoke-macos.sh
-```
-
-The generated project is:
-- `examples/xcode-smoke-macos/build/CasanchessSmokeMac.xcodeproj`
-
-The macOS smoke app uses a SwiftUI `@main` app entrypoint.
+Notes:
+- The script uses the committed Xcode project and can build both iOS simulator + macOS targets when `BUILD_SMOKE=1`.
+- For physical iPhone installs, open the project in Xcode and set a Development Team under Signing & Capabilities.
 
 ## Future roadmap
 * Multi-thread implementation

@@ -12,6 +12,7 @@ syzygy/
 # OS-generated files
 .DS_Store
 .vscode
+xcuserdata/
 
 # Packages
 *.7z
