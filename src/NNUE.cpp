@@ -20,10 +20,12 @@
 
 #include "NNUE.h"
 #include "BitboardUtils.h"
-#include <immintrin.h>
 #include <cassert>
 #include <cstring>
 #include <fstream>
+#if defined(__AVX__) && defined(__FMA__)
+    #include <immintrin.h>
+#endif
 
 namespace NNUEConstants {
     constexpr u8 KING_BUCKETS[64] = {
@@ -232,28 +234,29 @@ float NNUE::Clamp(float n) {
     return std::clamp(n, 0.0f, 1.0f);
 }
 
-//Horizontal sum of 8 floats (256-bits)
+#if defined(__AVX__) && defined(__FMA__)
+// Horizontal sum of 8 floats (256-bits).
 inline float HorizontalSum256(__m256 v) {
-    const __m128 r4 = _mm_add_ps( _mm256_castps256_ps128(v), _mm256_extractf128_ps(v, 1) );
-    const __m128 r2 = _mm_add_ps( r4, _mm_movehl_ps( r4, r4 ) );
-    const __m128 r1 = _mm_add_ss( r2, _mm_movehdup_ps( r2 ) );
+    const __m128 r4 = _mm_add_ps(_mm256_castps256_ps128(v), _mm256_extractf128_ps(v, 1));
+    const __m128 r2 = _mm_add_ps(r4, _mm_movehl_ps(r4, r4));
+    const __m128 r1 = _mm_add_ss(r2, _mm_movehdup_ps(r2));
     return _mm_cvtss_f32(r1);
 }
+#endif
 
 void NNUE::ComputeLayer(float* inputLayer, float* outputLayer, float* biases, float* weights, int dimInput, int dimOutput, bool with_ReLU) {
     for(int o = 0; o < dimOutput; o++) {
         float sum = biases[o];
-
         const int offset = o * dimInput;
 
+#if defined(__AVX__) && defined(__FMA__)
         __m256 dot0 = _mm256_setzero_ps();
         __m256 dot1 = _mm256_setzero_ps();
         __m256 dot2 = _mm256_setzero_ps();
         __m256 dot3 = _mm256_setzero_ps();
 
-        //_mm512_setzero_ps
-
-        for(int i = 0; i < dimInput; i += 32) {
+        int i = 0;
+        for(; i + 31 < dimInput; i += 32) {
             __m256 inputs0 = _mm256_loadu_ps(&inputLayer[i +  0]);
             __m256 inputs1 = _mm256_loadu_ps(&inputLayer[i +  8]);
             __m256 inputs2 = _mm256_loadu_ps(&inputLayer[i + 16]);
@@ -275,6 +278,15 @@ void NNUE::ComputeLayer(float* inputLayer, float* outputLayer, float* biases, fl
         dot0 = _mm256_add_ps( dot0, dot2 );
 
         sum += HorizontalSum256(dot0);
+        for(; i < dimInput; i++) {
+            sum += inputLayer[i] * weights[offset + i];
+        }
+#else
+        // Scalar fallback for non-AVX targets (e.g. iOS/ARM).
+        for(int i = 0; i < dimInput; i++) {
+            sum += inputLayer[i] * weights[offset + i];
+        }
+#endif
 
         if(with_ReLU) {
             outputLayer[o] = Clamp(sum);

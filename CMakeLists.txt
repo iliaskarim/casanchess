@@ -44,7 +44,11 @@ if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL" CACHE STRING "" FORCE)
 else()
     set(WARNING_FLAGS -Wall -Wextra -Wshadow)
-    set(ARCH_FLAGS -march=haswell -mtune=generic)
+    # Keep architecture tuning portable; only force Haswell flags on x86.
+    set(ARCH_FLAGS)
+    if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(x86_64|amd64|AMD64|i[3-6]86)$")
+        set(ARCH_FLAGS -march=haswell -mtune=generic)
+    endif()
     set(OPTIMIZATION_FLAGS -O3 -ffast-math -DNDEBUG -fomit-frame-pointer -funroll-loops)
     set(COMPILER_OPTIONS
         ${WARNING_FLAGS} ${ARCH_FLAGS}
@@ -116,9 +120,8 @@ target_include_directories(fathom PUBLIC
 set(EXTERNAL_LIBRARIES Threads::Threads fathom)
 
 # =============================================================================
-# Engine Library
+# Casanchess Library
 # =============================================================================
-# OBJECT
 set(INCLUDE_PATHS
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/external>
@@ -147,28 +150,10 @@ set(ENGINE_SOURCES
     src/ZobristKeys.cpp
 )
 
-# Create OBJECT library for main executable (single file distribution)
-add_library(engine_obj OBJECT ${ENGINE_SOURCES})
-target_include_directories(engine_obj PUBLIC ${INCLUDE_PATHS})
-target_compile_options(engine_obj PUBLIC ${COMPILER_OPTIONS})
-target_link_libraries(engine_obj PUBLIC ${EXTERNAL_LIBRARIES})
-
-# INTERFACE
-add_library(engine INTERFACE)
-target_link_libraries(engine INTERFACE engine_obj)
-
-# STATIC
-# Create STATIC library for tests and tools (faster compilation)
-add_library(engine_static STATIC $<TARGET_OBJECTS:engine_obj>)
-target_link_libraries(engine_static PUBLIC engine)
-
-# =============================================================================
-# Casanchess Executable
-# =============================================================================
-add_executable(casanchess Main.cpp)
-
-target_link_libraries(casanchess PRIVATE $<TARGET_OBJECTS:engine_obj> engine)
-target_link_options(casanchess PRIVATE ${LINK_FLAGS})
+add_library(casanchess STATIC ${ENGINE_SOURCES})
+target_include_directories(casanchess PUBLIC ${INCLUDE_PATHS})
+target_compile_options(casanchess PRIVATE ${COMPILER_OPTIONS})
+target_link_libraries(casanchess PUBLIC ${EXTERNAL_LIBRARIES})
 
 # =============================================================================
 # Data Files
@@ -200,19 +185,19 @@ if(BUILD_TESTS)
     )
     
     target_compile_options(tests PRIVATE ${COMPILER_OPTIONS})
-    target_link_libraries(tests PRIVATE engine_static gtest)
+    target_link_libraries(tests PRIVATE casanchess gtest)
 
     # Extra tests
     if(BUILD_TESTS_EXTRA)
         # Perft test
         add_executable(perft tests/test-Perft.cpp)
         target_compile_options(perft PRIVATE ${COMPILER_OPTIONS})
-        target_link_libraries(perft PRIVATE engine_static gtest)
+        target_link_libraries(perft PRIVATE casanchess gtest)
 
         # Search test
         add_executable(searcht tests/test-Search.cpp)
         target_compile_options(searcht PRIVATE ${COMPILER_OPTIONS})
-        target_link_libraries(searcht PRIVATE engine_static gtest)
+        target_link_libraries(searcht PRIVATE casanchess gtest)
     endif()
 endif()
 
@@ -226,12 +211,12 @@ if(BUILD_EXECUTABLES_EXTRA)
         src/gensfen/Main.cpp
     )
     target_compile_options(gensfen PRIVATE ${COMPILER_OPTIONS})
-    target_link_libraries(gensfen PRIVATE engine_static)
+    target_link_libraries(gensfen PRIVATE casanchess)
 
     # NNUE_Convert executable
     add_executable(nnue_convert
         src/nnue_convert/NNUE_Convert.cpp
     )
     target_compile_options(nnue_convert PRIVATE ${COMPILER_OPTIONS})
-    target_link_libraries(nnue_convert PRIVATE engine_static)
+    target_link_libraries(nnue_convert PRIVATE casanchess)
 endif()

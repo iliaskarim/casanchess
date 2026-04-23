@@ -43,6 +43,26 @@ The following UCI options are available:
 * **``ClassicalEval``**: turn on to switch to the classical evaluation without NNUE. Off by default.
 * **``NNUE_Path``**: Path to the NNUE file.
 
+## Apple library build (macOS + iOS)
+Build universal static libraries for:
+- macOS (`arm64`, `x86_64`)
+- iPhoneOS (`arm64`)
+- iPhoneSimulator (`arm64`, `x86_64`)
+- Mac Catalyst (`arm64`, `x86_64`)
+
+Then package them into `casanchess.xcframework`:
+
+```sh
+./scripts/build-apple-libs.sh
+```
+
+Outputs are generated under:
+- `artifacts/apple/libcasanchess-macos.a`
+- `artifacts/apple/libcasanchess-iphoneos.a`
+- `artifacts/apple/libcasanchess-iphonesimulator.a`
+- `artifacts/apple/libcasanchess-maccatalyst.a`
+- `artifacts/apple/casanchess.xcframework`
+
 ## Future roadmap
 * Multi-thread implementation
 
