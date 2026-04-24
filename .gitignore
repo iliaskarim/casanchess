@@ -22,3 +22,6 @@ xcuserdata/
 
 # AI
 .github/copilot-instructions.md
+
+# SwiftPM
+**/.build/

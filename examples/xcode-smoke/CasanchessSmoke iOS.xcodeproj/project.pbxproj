@@ -20,6 +20,11 @@
 			path = "CasanchessSmoke iOS";
 			sourceTree = "<group>";
 		};
+		A1B2C3D42F9A378E0031BFC6 /* CasanchessSmoke */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CasanchessSmoke;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,6 +50,7 @@
 			isa = PBXGroup;
 			children = (
 				7D495F882F9A378E0031BFC6 /* CasanchessSmoke iOS */,
+				A1B2C3D42F9A378E0031BFC6 /* CasanchessSmoke */,
 				7D495F872F9A378E0031BFC6 /* Products */,
 				3EF6B9F7A7A722FDC084F41D /* Frameworks */,
 			);
@@ -75,6 +81,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				7D495F882F9A378E0031BFC6 /* CasanchessSmoke iOS */,
+				A1B2C3D42F9A378E0031BFC6 /* CasanchessSmoke */,
 			);
 			name = "CasanchessSmoke iOS";
 			packageProductDependencies = (
