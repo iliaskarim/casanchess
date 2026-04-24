@@ -7,19 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		53D285719E4F0151DA0393C7 /* casanchess.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE75C41806AC0366B6C7F78 /* casanchess.xcframework */; };
+		53D285719E4F0151DA0393C7 /* Casanchess in Frameworks */ = {isa = PBXBuildFile; productRef = 53D285739E4F0151DA0393C7 /* Casanchess */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		7D495F862F9A378E0031BFC6 /* CasanchessSmoke iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CasanchessSmoke iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CEE75C41806AC0366B6C7F78 /* casanchess.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; name = casanchess.xcframework; path = ../../artifacts/apple/casanchess.xcframework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		7D495F882F9A378E0031BFC6 /* CasanchessSmoke iOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = "CasanchessSmoke iOS";
 			sourceTree = "<group>";
 		};
@@ -30,7 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				53D285719E4F0151DA0393C7 /* casanchess.xcframework in Frameworks */,
+				53D285719E4F0151DA0393C7 /* Casanchess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40,7 +37,6 @@
 		3EF6B9F7A7A722FDC084F41D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				CEE75C41806AC0366B6C7F78 /* casanchess.xcframework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -81,6 +77,9 @@
 				7D495F882F9A378E0031BFC6 /* CasanchessSmoke iOS */,
 			);
 			name = "CasanchessSmoke iOS";
+			packageProductDependencies = (
+				53D285739E4F0151DA0393C7 /* Casanchess */,
+			);
 			productName = "CasanchessSmoke iOS";
 			productReference = 7D495F862F9A378E0031BFC6 /* CasanchessSmoke iOS.app */;
 			productType = "com.apple.product-type.application";
@@ -109,6 +108,9 @@
 			);
 			mainGroup = 7D495F7D2F9A378E0031BFC6;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				53D285729E4F0151DA0393C7 /* XCLocalSwiftPackageReference "Casanchess" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 7D495F872F9A378E0031BFC6 /* Products */;
 			projectDirPath = "";
@@ -272,7 +274,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../../artifacts/apple/casanchess.xcframework/ios-arm64/Headers",
+					"$(PROJECT_DIR)/../../external/fathom/src",
 				);
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -287,7 +289,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.iliaskarim.CasanchessSmoke-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "CasanchessSmoke iOS/BridgingHeader.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -306,7 +307,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/../../artifacts/apple/casanchess.xcframework/ios-arm64/Headers",
+					"$(PROJECT_DIR)/../../external/fathom/src",
 				);
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -321,7 +322,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.iliaskarim.CasanchessSmoke-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "CasanchessSmoke iOS/BridgingHeader.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -349,6 +349,21 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		53D285729E4F0151DA0393C7 /* XCLocalSwiftPackageReference "Casanchess" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = Casanchess;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		53D285739E4F0151DA0393C7 /* Casanchess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 53D285729E4F0151DA0393C7 /* XCLocalSwiftPackageReference "Casanchess" */;
+			productName = Casanchess;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7D495F7E2F9A378E0031BFC6 /* Project object */;
 }
