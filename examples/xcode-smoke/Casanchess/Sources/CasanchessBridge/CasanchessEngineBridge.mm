@@ -35,11 +35,20 @@ dispatch_queue_t g_analysisQueue;
     Evaluation::Init();
     ZobristKeys::Init();
 
-    NSString *nnuePath = [[NSBundle mainBundle] pathForResource:@"network-20220625" ofType:@"nnue"];
+    NSString *nnuePath = nil;
+    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+    if(resourcePath != nil) {
+        NSString *moduleBundlePath = [resourcePath stringByAppendingPathComponent:@"Casanchess_Casanchess.bundle"];
+        NSBundle *moduleBundle = [NSBundle bundleWithPath:moduleBundlePath];
+        if(moduleBundle != nil) {
+            nnuePath = [moduleBundle pathForResource:@"network-20220625" ofType:@"nnue"];
+        }
+    }
+
     if(nnuePath != nil) {
         nnue.Load(std::string([nnuePath UTF8String]));
     } else {
-        NSLog(@"ERROR: bundled NNUE file not found");
+        NSLog(@"ERROR: NNUE file not found in Casanchess module bundle");
         nnue.Load();
     }
 

@@ -10,11 +10,27 @@
 		53D285719E4F0151DA0393C7 /* Casanchess in Frameworks */ = {isa = PBXBuildFile; productRef = 53D285739E4F0151DA0393C7 /* Casanchess */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		7D1BB8B92F9B7B4400E37284 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7D495F7E2F9A378E0031BFC6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7D495F852F9A378E0031BFC6;
+			remoteInfo = "CasanchessSmoke iOS";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		7D1BB8B52F9B7B4400E37284 /* CasanchessSmoke iOS Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "CasanchessSmoke iOS Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D495F862F9A378E0031BFC6 /* CasanchessSmoke iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CasanchessSmoke iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		7D1BB8B62F9B7B4400E37284 /* CasanchessSmoke iOS Tests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "CasanchessSmoke iOS Tests";
+			sourceTree = "<group>";
+		};
 		7D495F882F9A378E0031BFC6 /* CasanchessSmoke iOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = "CasanchessSmoke iOS";
@@ -25,9 +41,21 @@
 			path = CasanchessSmoke;
 			sourceTree = "<group>";
 		};
+		C1D2E3F42F9A378E0031BFC6 /* CasanchessSmokeTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CasanchessSmokeTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		7D1BB8B22F9B7B4400E37284 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7D495F832F9A378E0031BFC6 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -51,6 +79,8 @@
 			children = (
 				7D495F882F9A378E0031BFC6 /* CasanchessSmoke iOS */,
 				A1B2C3D42F9A378E0031BFC6 /* CasanchessSmoke */,
+				7D1BB8B62F9B7B4400E37284 /* CasanchessSmoke iOS Tests */,
+				C1D2E3F42F9A378E0031BFC6 /* CasanchessSmokeTests */,
 				7D495F872F9A378E0031BFC6 /* Products */,
 				3EF6B9F7A7A722FDC084F41D /* Frameworks */,
 			);
@@ -60,6 +90,7 @@
 			isa = PBXGroup;
 			children = (
 				7D495F862F9A378E0031BFC6 /* CasanchessSmoke iOS.app */,
+				7D1BB8B52F9B7B4400E37284 /* CasanchessSmoke iOS Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -67,6 +98,30 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		7D1BB8B42F9B7B4400E37284 /* CasanchessSmoke iOS Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7D1BB8BD2F9B7B4400E37284 /* Build configuration list for PBXNativeTarget "CasanchessSmoke iOS Tests" */;
+			buildPhases = (
+				7D1BB8B12F9B7B4400E37284 /* Sources */,
+				7D1BB8B22F9B7B4400E37284 /* Frameworks */,
+				7D1BB8B32F9B7B4400E37284 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7D1BB8BA2F9B7B4400E37284 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				7D1BB8B62F9B7B4400E37284 /* CasanchessSmoke iOS Tests */,
+				C1D2E3F42F9A378E0031BFC6 /* CasanchessSmokeTests */,
+			);
+			name = "CasanchessSmoke iOS Tests";
+			packageProductDependencies = (
+			);
+			productName = "CasanchessSmoke iOS Tests";
+			productReference = 7D1BB8B52F9B7B4400E37284 /* CasanchessSmoke iOS Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		7D495F852F9A378E0031BFC6 /* CasanchessSmoke iOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7D495F942F9A37900031BFC6 /* Build configuration list for PBXNativeTarget "CasanchessSmoke iOS" */;
@@ -101,6 +156,10 @@
 				LastSwiftUpdateCheck = 1620;
 				LastUpgradeCheck = 1620;
 				TargetAttributes = {
+					7D1BB8B42F9B7B4400E37284 = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 7D495F852F9A378E0031BFC6;
+					};
 					7D495F852F9A378E0031BFC6 = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -124,11 +183,19 @@
 			projectRoot = "";
 			targets = (
 				7D495F852F9A378E0031BFC6 /* CasanchessSmoke iOS */,
+				7D1BB8B42F9B7B4400E37284 /* CasanchessSmoke iOS Tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		7D1BB8B32F9B7B4400E37284 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7D495F842F9A378E0031BFC6 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -139,6 +206,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		7D1BB8B12F9B7B4400E37284 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		7D495F822F9A378E0031BFC6 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -148,7 +222,51 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		7D1BB8BA2F9B7B4400E37284 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7D495F852F9A378E0031BFC6 /* CasanchessSmoke iOS */;
+			targetProxy = 7D1BB8B92F9B7B4400E37284 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		7D1BB8BB2F9B7B4400E37284 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H2SLQDK5YK;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.iliaskarim.CasanchessSmoke-iOS-Tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CasanchessSmoke iOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CasanchessSmoke iOS";
+			};
+			name = Debug;
+		};
+		7D1BB8BC2F9B7B4400E37284 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = H2SLQDK5YK;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.iliaskarim.CasanchessSmoke-iOS-Tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CasanchessSmoke iOS.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CasanchessSmoke iOS";
+			};
+			name = Release;
+		};
 		7D495F922F9A37900031BFC6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -337,6 +455,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		7D1BB8BD2F9B7B4400E37284 /* Build configuration list for PBXNativeTarget "CasanchessSmoke iOS Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D1BB8BB2F9B7B4400E37284 /* Debug */,
+				7D1BB8BC2F9B7B4400E37284 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		7D495F812F9A378E0031BFC6 /* Build configuration list for PBXProject "CasanchessSmoke iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

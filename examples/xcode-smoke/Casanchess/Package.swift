@@ -13,7 +13,10 @@ let package = Package(
   targets: [
     .target(
       name: "Casanchess",
-      dependencies: ["CasanchessBridge"]
+      dependencies: ["CasanchessBridge"],
+      resources: [
+        .copy("network-20220625.nnue")
+      ]
     ),
     .target(
       name: "CasanchessBridge",
