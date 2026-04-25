@@ -282,7 +282,7 @@ void NNUE::ComputeLayer(float* inputLayer, float* outputLayer, float* biases, fl
             sum += inputLayer[i] * weights[offset + i];
         }
 #else
-        // Scalar fallback for non-AVX targets (e.g. iOS/ARM).
+        // Portable fallback for non-AVX targets; AppleClang auto-vectorizes this on arm64.
         for(int i = 0; i < dimInput; i++) {
             sum += inputLayer[i] * weights[offset + i];
         }
