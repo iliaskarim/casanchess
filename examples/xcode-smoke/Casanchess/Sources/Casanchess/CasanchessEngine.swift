@@ -1,36 +1,12 @@
 import CasanchessBridge
+import Combine
 import Foundation
 
 @MainActor
 public final class CasanchessEngine {
-  public struct ScoreUpdate: Sendable {
-    public let depth: Int
-    public let score: Float
-    public let bestMove: String?
-    public let isFinal: Bool
-  }
-
   public static let shared = CasanchessEngine()
 
   private init() {}
-
-  public var depth: Int {
-    get { Int(CasanchessEngineBridge.engineGetDepth()) }
-    set { CasanchessEngineBridge.engineSetDepth(Int32(newValue)) }
-  }
-
-  public var scoreDepth: Int {
-    get { Int(CasanchessEngineBridge.engineGetScoreDepth()) }
-    set { CasanchessEngineBridge.engineSetScoreDepth(Int32(newValue)) }
-  }
-
-  public var bestMoveDepth: Int {
-    get { Int(CasanchessEngineBridge.engineGetBestMoveDepth()) }
-    set { CasanchessEngineBridge.engineSetBestMoveDepth(Int32(newValue)) }
-  }
-
-  public var score: Float { CasanchessEngineBridge.engineGetScore() }
-  public var bestMove: String? { CasanchessEngineBridge.engineGetBestMoveUci() }
 
   public func resetGame() { CasanchessEngineBridge.engineResetGame() }
 
@@ -38,22 +14,33 @@ public final class CasanchessEngine {
     CasanchessEngineBridge.engineApplyMove(uciMove)
   }
 
-  public func analyzeScoreProgressively() -> AsyncStream<ScoreUpdate> {
-    AsyncStream { continuation in
-      CasanchessEngineBridge.engineAnalyzeScoreAsync { depth, score, bestMove, isFinal in
-        continuation.yield(
-          ScoreUpdate(
-            depth: Int(depth),
-            score: score,
-            bestMove: bestMove,
-            isFinal: isFinal
-          )
-        )
+  public func evaluate(depth: Int) -> AnyPublisher<Float, Never> {
+    Deferred {
+      let subject = PassthroughSubject<Float, Never>()
+      Task { @MainActor in
+        CasanchessEngineBridge.engineEvaluate(withDepth: Int32(depth)) { score, isFinal in
+          subject.send(score)
 
-        if isFinal {
-          continuation.finish()
+          if isFinal {
+            subject.send(completion: .finished)
+          }
+        }
+      }
+      return subject
+    }
+    .eraseToAnyPublisher()
+  }
+
+  public func bestMove(depth: Int) -> AnyPublisher<String?, Never> {
+    Deferred {
+      Future { promise in
+        Task { @MainActor in
+          CasanchessEngineBridge.engineBestMove(withDepth: Int32(depth)) { bestMove in
+            promise(.success(bestMove))
+          }
         }
       }
     }
+    .eraseToAnyPublisher()
   }
 }

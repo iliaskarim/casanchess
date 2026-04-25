@@ -1,12 +1,28 @@
 import Casanchess
+import Combine
 import Foundation
+
+enum SmokeAnalysisMode: String, CaseIterable, Identifiable {
+  case evaluation
+  case bestMove
+
+  var id: String { rawValue }
+
+  var title: String {
+    switch self {
+    case .evaluation:
+      return "Evaluation"
+    case .bestMove:
+      return "Best Move"
+    }
+  }
+}
 
 @MainActor
 final class SmokeViewModel: ObservableObject {
   @Published var uciMoveText = ""
-  @Published var shouldGetBestMove = true
-  @Published var bestMoveDepthText = "5"
-  @Published var scoreDepthText = "10"
+  @Published var mode: SmokeAnalysisMode = .evaluation
+  @Published var depthText = "10"
   @Published var outputText = ""
   @Published var validationMessage = ""
   @Published var isRunning = false
@@ -14,29 +30,20 @@ final class SmokeViewModel: ObservableObject {
   @Published private(set) var hasPlayedMove = false
 
   private let engine = CasanchessEngine.shared
-  private var analysisTask: Task<Void, Never>?
+  private var cancellables = Set<AnyCancellable>()
 
   func go() {
     guard !isRunning else { return }
 
     let uciMove = uciMoveText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-    let bestMoveDepth = Int(bestMoveDepthText) ?? 0
-    let scoreDepth = Int(scoreDepthText) ?? 0
+    let depth = Int(depthText) ?? 0
 
     if uciMove.isEmpty {
       validationMessage = "UCI move cannot be empty."
       return
     }
-    if scoreDepth < 1 {
-      validationMessage = "Score depth must be at least 1."
-      return
-    }
-    if shouldGetBestMove && bestMoveDepth < 1 {
-      validationMessage = "Best move depth must be at least 1."
-      return
-    }
-    if shouldGetBestMove && scoreDepth < bestMoveDepth {
-      validationMessage = "Score depth must be greater than or equal to best move depth."
+    if depth < 1 {
+      validationMessage = "Depth must be at least 1."
       return
     }
     if !engine.applyMove(uciMove) {
@@ -47,24 +54,47 @@ final class SmokeViewModel: ObservableObject {
     hasPlayedMove = true
     validationMessage = ""
     isRunning = true
-    engine.bestMoveDepth = shouldGetBestMove ? bestMoveDepth : scoreDepth
-    engine.scoreDepth = scoreDepth
     outputText = ""
     latestScore = nil
+    cancellables.removeAll()
     appendLine("apply_move move=\(uciMove)")
     uciMoveText = ""
 
-    analysisTask = Task {
-      for await update in engine.analyzeScoreProgressively() {
-        latestScore = update.score
-        appendLine("score depth=\(update.depth) score=\(update.score)")
-        if shouldGetBestMove, let bestMove = update.bestMove {
-          appendLine("best_move best_move=\(bestMove)")
-        }
-      }
-      isRunning = false
-      analysisTask = nil
+    switch mode {
+    case .evaluation:
+      runEvaluation(depth: depth)
+    case .bestMove:
+      runBestMove(depth: depth)
     }
+  }
+
+  private func runEvaluation(depth: Int) {
+    engine.evaluate(depth: depth)
+      .sink(
+        receiveCompletion: { [weak self] _ in
+          self?.isRunning = false
+          self?.cancellables.removeAll()
+        },
+        receiveValue: { [weak self] score in
+          self?.latestScore = score
+          self?.appendLine("score score=\(score)")
+        }
+      )
+      .store(in: &cancellables)
+  }
+
+  private func runBestMove(depth: Int) {
+    engine.bestMove(depth: depth)
+      .sink { [weak self] bestMove in
+        if let bestMove {
+          self?.appendLine("best_move best_move=\(bestMove)")
+        } else {
+          self?.appendLine("best_move best_move=nil")
+        }
+        self?.isRunning = false
+        self?.cancellables.removeAll()
+      }
+      .store(in: &cancellables)
   }
 
   var canReset: Bool {
@@ -73,8 +103,7 @@ final class SmokeViewModel: ObservableObject {
 
   func reset() {
     guard canReset else { return }
-    analysisTask?.cancel()
-    analysisTask = nil
+    cancellables.removeAll()
     isRunning = false
     engine.resetGame()
     hasPlayedMove = false

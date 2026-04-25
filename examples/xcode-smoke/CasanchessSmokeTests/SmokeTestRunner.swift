@@ -1,25 +1,28 @@
 import Casanchess
+import Combine
 import Testing
 
 @MainActor
 func runSharedSmokeContractTest() async {
   let engine = CasanchessEngine.shared
   engine.resetGame()
-  engine.bestMoveDepth = 5
-  engine.scoreDepth = 10
 
   #expect(engine.applyMove("f2f3"))
 
-  var updates: [CasanchessEngine.ScoreUpdate] = []
-  for await update in engine.analyzeScoreProgressively() {
-    updates.append(update)
+  var scores: [Float] = []
+  for await score in engine.evaluate(depth: 10).values {
+    scores.append(score)
   }
 
-  #expect(updates.count == 10)
-  #expect(updates.last?.depth == 10)
-  #expect(updates.first?.depth == 1)
+  #expect(scores.count == 10)
+  #expect(scores.allSatisfy { (-1.0...1.0).contains($0) })
 
-  let bestMoveUpdates = updates.filter { $0.bestMove != nil }
-  #expect(bestMoveUpdates.count == 1)
-  #expect(bestMoveUpdates.first?.depth == 5)
+  var bestMoves: [String?] = []
+  for await bestMove in engine.bestMove(depth: 5).values {
+    bestMoves.append(bestMove)
+  }
+
+  #expect(bestMoves.count == 1)
+  let firstBestMove = bestMoves.first ?? nil
+  #expect(firstBestMove != nil)
 }

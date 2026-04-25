@@ -3,20 +3,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef void (^CasanchessScoreUpdateBlock)(int depth, float score, NSString * _Nullable bestMoveUci, BOOL isFinal);
+typedef void (^CasanchessEvaluationUpdateBlock)(float score, BOOL isFinal);
+typedef void (^CasanchessBestMoveBlock)(NSString * _Nullable bestMoveUci);
 
 @interface CasanchessEngineBridge : NSObject
 + (void)engineResetGame;
-+ (void)engineSetDepth:(int)depth;
-+ (int)engineGetDepth;
-+ (void)engineSetScoreDepth:(int)depth;
-+ (int)engineGetScoreDepth;
-+ (void)engineSetBestMoveDepth:(int)depth;
-+ (int)engineGetBestMoveDepth;
 + (BOOL)engineApplyMove:(NSString *)uciMove;
-+ (float)engineGetScore;
-+ (nullable NSString *)engineGetBestMoveUci;
-+ (void)engineAnalyzeScoreAsyncWithCallback:(CasanchessScoreUpdateBlock)callback;
++ (void)engineEvaluateWithDepth:(int)depth callback:(CasanchessEvaluationUpdateBlock)callback;
++ (void)engineBestMoveWithDepth:(int)depth callback:(CasanchessBestMoveBlock)callback;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -18,19 +18,23 @@ struct ContentView: View {
         TextField("e2e4", text: $viewModel.uciMoveText)
           .textFieldStyle(.roundedBorder)
           .textInputAutocapitalization(.never)
+          .submitLabel(.go)
+          .onSubmit {
+            viewModel.go()
+          }
 
-        Toggle("Get Best Move", isOn: $viewModel.shouldGetBestMove)
-
-        Text("Best Move Depth")
+        Text("Operation")
           .font(.caption.weight(.semibold))
-        TextField("5", text: $viewModel.bestMoveDepthText)
-          .keyboardType(.numberPad)
-          .textFieldStyle(.roundedBorder)
-          .disabled(!viewModel.shouldGetBestMove)
+        Picker("Operation", selection: $viewModel.mode) {
+          ForEach(SmokeAnalysisMode.allCases) { mode in
+            Text(mode.title).tag(mode)
+          }
+        }
+        .pickerStyle(.segmented)
 
-        Text("Score Depth")
+        Text("Depth")
           .font(.caption.weight(.semibold))
-        TextField("10", text: $viewModel.scoreDepthText)
+        TextField("10", text: $viewModel.depthText)
           .keyboardType(.numberPad)
           .textFieldStyle(.roundedBorder)
 
@@ -59,7 +63,9 @@ struct ContentView: View {
         OutputLogView(outputText: viewModel.outputText)
           .frame(minHeight: 280)
 
-        EvalBarView(score: viewModel.latestScore)
+        if viewModel.mode == .evaluation {
+          EvalBarView(score: viewModel.latestScore)
+        }
       }
       .padding()
       .background(.background)

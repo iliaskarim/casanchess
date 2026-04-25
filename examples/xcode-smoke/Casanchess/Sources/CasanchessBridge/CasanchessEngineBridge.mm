@@ -15,15 +15,36 @@
 
 struct CasanchessEngine {
     Board board;
-    Search search;
-    int scoreDepth = 5;
-    int bestMoveDepth = 5;
-    float normalizedScore = 0.0f;
-    std::string bestMoveBuffer;
 };
 
 CasanchessEngine g_state;
 dispatch_queue_t g_analysisQueue;
+
+namespace {
+struct CasanchessSearchResult {
+    float normalizedScore;
+    std::string bestMoveUci;
+};
+
+float NormalizeScore(int score) {
+    if(IsMateValue(score)) {
+        return (score > 0) ? 1.0f : -1.0f;
+    }
+
+    const float normalized = std::tanh(static_cast<float>(score) / 600.0f);
+    return std::clamp(normalized, -1.0f, 1.0f);
+}
+
+CasanchessSearchResult RunSearch(Search &search, Board board, int depth) {
+    search.FixDepth(std::max(1, depth));
+    search.IterativeDeepening(board, false);
+
+    return CasanchessSearchResult {
+        NormalizeScore(search.BestScore()),
+        search.BestMove().Notation()
+    };
+}
+}
 
 @implementation CasanchessEngineBridge
 
@@ -53,45 +74,12 @@ dispatch_queue_t g_analysisQueue;
     }
 
     g_state.board.Init();
-    g_state.scoreDepth = 5;
-    g_state.bestMoveDepth = 5;
-    g_state.normalizedScore = 0.0f;
-    g_state.bestMoveBuffer.clear();
-    g_state.search.FixDepth(g_state.bestMoveDepth);
     g_analysisQueue = dispatch_queue_create("dev.casanchess.analysis", DISPATCH_QUEUE_SERIAL);
     UCI_OUTPUT = false;
 }
 
 + (void)engineResetGame {
     g_state.board.Init();
-    g_state.normalizedScore = 0.0f;
-    g_state.bestMoveBuffer.clear();
-}
-
-+ (void)engineSetDepth:(int)depth {
-    const int sanitizedDepth = std::max(1, depth);
-    g_state.scoreDepth = sanitizedDepth;
-    g_state.bestMoveDepth = sanitizedDepth;
-}
-
-+ (int)engineGetDepth {
-    return g_state.bestMoveDepth;
-}
-
-+ (void)engineSetScoreDepth:(int)depth {
-    g_state.scoreDepth = std::max(1, depth);
-}
-
-+ (int)engineGetScoreDepth {
-    return g_state.scoreDepth;
-}
-
-+ (void)engineSetBestMoveDepth:(int)depth {
-    g_state.bestMoveDepth = std::max(1, depth);
-}
-
-+ (int)engineGetBestMoveDepth {
-    return g_state.bestMoveDepth;
 }
 
 + (BOOL)engineApplyMove:(NSString *)uciMove {
@@ -100,72 +88,50 @@ dispatch_queue_t g_analysisQueue;
     }
 
     g_state.board.MakeMove(std::string([uciMove UTF8String]));
-    g_state.normalizedScore = 0.0f;
-    g_state.bestMoveBuffer.clear();
     return true;
 }
 
-+ (float)engineGetScore {
-    return g_state.normalizedScore;
-}
-
-+ (NSString * _Nullable)engineGetBestMoveUci {
-    if(g_state.bestMoveBuffer == "0000" || g_state.bestMoveBuffer.empty()) {
-        return nil;
-    }
-    return [NSString stringWithUTF8String:g_state.bestMoveBuffer.c_str()];
-}
-
-+ (float)normalizeScore:(int)score {
-    if(IsMateValue(score)) {
-        return (score > 0) ? 1.0f : -1.0f;
-    }
-
-    const float normalized = std::tanh(static_cast<float>(score) / 600.0f);
-    return std::clamp(normalized, -1.0f, 1.0f);
-}
-
-+ (void)engineAnalyzeScoreAsyncWithCallback:(CasanchessScoreUpdateBlock)callback {
++ (void)engineEvaluateWithDepth:(int)depth callback:(CasanchessEvaluationUpdateBlock)callback {
     if(callback == nil) {
         return;
     }
 
-    const int targetDepth = std::max(1, g_state.scoreDepth);
-    const int bestMoveDepth = std::max(1, g_state.bestMoveDepth);
+    const int targetDepth = std::max(1, depth);
     const Board boardSnapshot = g_state.board;
 
     dispatch_async(g_analysisQueue, ^{
         Search localSearch;
-        localSearch.FixDepth(1);
-        bool bestMoveEmitted = false;
 
-        for(int depth = 1; depth <= targetDepth; ++depth) {
-            Board workingBoard = boardSnapshot;
-            localSearch.FixDepth(depth);
-            localSearch.IterativeDeepening(workingBoard, false);
-
-            const int bestScore = localSearch.BestScore();
-            const float normalized = [self normalizeScore:bestScore];
-            const BOOL isFinal = (depth == targetDepth);
-
-            g_state.normalizedScore = normalized;
-
-            NSString *bestMoveUci = nil;
-            if(!bestMoveEmitted && depth >= bestMoveDepth) {
-                const std::string bestMoveText = localSearch.BestMove().Notation();
-                g_state.bestMoveBuffer = bestMoveText;
-
-                if(bestMoveText != "0000" && !bestMoveText.empty()) {
-                    bestMoveUci = [NSString stringWithUTF8String:bestMoveText.c_str()];
-                }
-
-                bestMoveEmitted = true;
-            }
-
+        for(int currentDepth = 1; currentDepth <= targetDepth; ++currentDepth) {
+            const CasanchessSearchResult result = RunSearch(localSearch, boardSnapshot, currentDepth);
+            const BOOL isFinal = (currentDepth == targetDepth);
             dispatch_async(dispatch_get_main_queue(), ^{
-                callback(depth, normalized, bestMoveUci, isFinal);
+                callback(result.normalizedScore, isFinal);
             });
         }
+    });
+}
+
++ (void)engineBestMoveWithDepth:(int)depth callback:(CasanchessBestMoveBlock)callback {
+    if(callback == nil) {
+        return;
+    }
+
+    const int targetDepth = std::max(1, depth);
+    const Board boardSnapshot = g_state.board;
+
+    dispatch_async(g_analysisQueue, ^{
+        Search localSearch;
+        const CasanchessSearchResult result = RunSearch(localSearch, boardSnapshot, targetDepth);
+        NSString *bestMoveUci = nil;
+
+        if(result.bestMoveUci != "0000" && !result.bestMoveUci.empty()) {
+            bestMoveUci = [NSString stringWithUTF8String:result.bestMoveUci.c_str()];
+        }
+
+        dispatch_async(dispatch_get_main_queue(), ^{
+            callback(bestMoveUci);
+        });
     });
 }
 

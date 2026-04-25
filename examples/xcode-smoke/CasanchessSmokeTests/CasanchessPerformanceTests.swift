@@ -1,4 +1,5 @@
 import Casanchess
+import Combine
 import XCTest
 
 final class CasanchessPerformanceTests: XCTestCase {
@@ -10,11 +11,9 @@ final class CasanchessPerformanceTests: XCTestCase {
       Task { @MainActor in
         let engine = CasanchessEngine.shared
         engine.resetGame()
-        engine.scoreDepth = 10
-        engine.bestMoveDepth = 5
         _ = engine.applyMove("f2f3")
 
-        for await _ in engine.analyzeScoreProgressively() {}
+        for await _ in engine.evaluate(depth: 10).values {}
 
         completion.fulfill()
       }

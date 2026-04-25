@@ -1,12 +1,13 @@
 import Casanchess
+import Combine
 import Foundation
 
 @MainActor
 enum CasanchessSmokeRunner {
   struct Configuration {
     let moves: [String]
-    let scoreDepth: Int
-    let bestMoveDepth: Int
+    let depth: Int
+    let mode: SmokeAnalysisMode
   }
 
   static func parseMoves(from text: String) -> [String] {
@@ -16,15 +17,12 @@ enum CasanchessSmokeRunner {
       .filter { !$0.isEmpty }
   }
 
-  static func validateInput(moves: [String], scoreDepth: Int, bestMoveDepth: Int) -> String? {
+  static func validateInput(moves: [String], depth: Int) -> String? {
     if moves.isEmpty {
       return "UCI moves cannot be empty."
     }
-    if bestMoveDepth < 1 {
-      return "Best move depth must be at least 1."
-    }
-    if scoreDepth < bestMoveDepth {
-      return "Score depth must be greater than or equal to best move depth."
+    if depth < 1 {
+      return "Depth must be at least 1."
     }
     return nil
   }
@@ -35,19 +33,19 @@ enum CasanchessSmokeRunner {
   ) async {
     _ = CasanchessEngine.shared
 
-    let engine = CasanchessEngine.shared
-    engine.scoreDepth = configuration.scoreDepth
-    engine.bestMoveDepth = configuration.bestMoveDepth
-
     await runMoveSequence(
       passName: "white-pass",
       analyzeAfterWhiteMove: true,
+      depth: configuration.depth,
+      mode: configuration.mode,
       moves: configuration.moves,
       log: log
     )
     await runMoveSequence(
       passName: "black-pass",
       analyzeAfterWhiteMove: false,
+      depth: configuration.depth,
+      mode: configuration.mode,
       moves: configuration.moves,
       log: log
     )
@@ -56,6 +54,8 @@ enum CasanchessSmokeRunner {
   private static func runMoveSequence(
     passName: String,
     analyzeAfterWhiteMove: Bool,
+    depth: Int,
+    mode: SmokeAnalysisMode,
     moves: [String],
     log: @escaping (String) -> Void
   ) async {
@@ -70,13 +70,17 @@ enum CasanchessSmokeRunner {
       }
 
       let isWhiteMove = index % 2 == 0
-      var didLogBestMove = false
 
-      for await update in engine.analyzeScoreProgressively() {
-        log("score pass=\(passName) move=\(move) depth=\(update.depth) score=\(update.score)")
-        if !didLogBestMove, isWhiteMove == analyzeAfterWhiteMove, let bestMove = update.bestMove {
-          log("best_move pass=\(passName) move=\(move) best_move=\(bestMove)")
-          didLogBestMove = true
+      switch mode {
+      case .evaluation:
+        for await score in engine.evaluate(depth: depth).values {
+          log("score pass=\(passName) move=\(move) score=\(score)")
+        }
+      case .bestMove:
+        guard isWhiteMove == analyzeAfterWhiteMove else { continue }
+        for await bestMove in engine.bestMove(depth: depth).values {
+          log("best_move pass=\(passName) move=\(move) best_move=\(bestMove ?? "nil")")
+          break
         }
       }
     }
