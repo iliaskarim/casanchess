@@ -3,7 +3,6 @@ import Combine
 import XCTest
 
 final class CasanchessPerformanceTests: XCTestCase {
-
   func testScoreAnalysisPerformance() {
     measure(metrics: [XCTClockMetric()]) {
       let completion = expectation(description: "score analysis completes")
@@ -21,5 +20,4 @@ final class CasanchessPerformanceTests: XCTestCase {
       wait(for: [completion], timeout: 30)
     }
   }
-
 }

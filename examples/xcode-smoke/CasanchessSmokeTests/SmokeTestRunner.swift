@@ -15,7 +15,7 @@ func runSharedSmokeContractTest() async {
   }
 
   #expect(scores.count == 10)
-  #expect(scores.allSatisfy { (-1.0...1.0).contains($0) })
+  #expect(scores.allSatisfy { (-1.0 ... 1.0).contains($0) })
 
   var bestMoves: [String?] = []
   for await bestMove in engine.bestMove(depth: 5).values {

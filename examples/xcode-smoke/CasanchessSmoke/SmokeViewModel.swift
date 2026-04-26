@@ -11,9 +11,9 @@ enum SmokeAnalysisMode: String, CaseIterable, Identifiable {
   var title: String {
     switch self {
     case .evaluation:
-      return "Evaluation"
+      "Evaluation"
     case .bestMove:
-      return "Best Move"
+      "Best Move"
     }
   }
 }

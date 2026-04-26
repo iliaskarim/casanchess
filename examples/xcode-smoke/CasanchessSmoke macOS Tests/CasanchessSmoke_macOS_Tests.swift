@@ -8,9 +8,7 @@
 import Testing
 
 struct CasanchessSmoke_macOS_Tests {
-
   @Test func smokeContract() async throws {
     await runSharedSmokeContractTest()
   }
-
 }
