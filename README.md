@@ -78,6 +78,18 @@ Notes:
 - The script uses the committed Xcode project and can build both iOS simulator + macOS targets when `BUILD_SMOKE=1`.
 - For physical iPhone installs, open the project in Xcode and set a Development Team under Signing & Capabilities.
 
+### Apple Syzygy tablebases
+The Apple Swift package can bundle optional Syzygy WDL files for endgame
+probing. Place `.rtbw` files under:
+
+```sh
+examples/xcode-smoke/Casanchess/Sources/Casanchess/syzygy/
+```
+
+Those files are intentionally ignored by git because tablebases are large. The
+current Apple wrapper uses WDL probing during search; DTZ `.rtbz` files are not
+used.
+
 ## Future roadmap
 * Multi-thread implementation
 

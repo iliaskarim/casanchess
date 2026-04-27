@@ -8,6 +8,9 @@ data/games
 data/syzygy*
 
 syzygy/
+!examples/xcode-smoke/Casanchess/Sources/Casanchess/syzygy/
+!examples/xcode-smoke/Casanchess/Sources/Casanchess/syzygy/.gitignore
+!examples/xcode-smoke/Casanchess/Sources/Casanchess/syzygy/README.md
 
 # OS-generated files
 .DS_Store

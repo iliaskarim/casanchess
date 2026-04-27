@@ -1,0 +1,5 @@
+*.rtbw
+*.rtbz
+checksum.md5
+!README.md
+!.gitignore

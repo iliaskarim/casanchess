@@ -15,7 +15,8 @@ let package = Package(
       name: "Casanchess",
       dependencies: ["CasanchessBridge"],
       resources: [
-        .copy("network-20220625.nnue")
+        .copy("network-20220625.nnue"),
+        .copy("syzygy")
       ]
     ),
     .target(
