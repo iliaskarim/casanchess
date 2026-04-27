@@ -5,6 +5,9 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BUILD_ROOT="${ROOT_DIR}/build/apple"
 OUT_DIR="${ROOT_DIR}/artifacts/apple"
 INCLUDE_DIR="${ROOT_DIR}/include"
+MACOS_DEPLOYMENT_TARGET="14.0"
+IOS_DEPLOYMENT_TARGET="18.0"
+MACCATALYST_DEPLOYMENT_TARGET="14.0"
 
 if ! command -v cmake >/dev/null 2>&1; then
   echo "error: cmake not found in PATH" >&2
@@ -31,6 +34,7 @@ configure_and_build() {
     -DCMAKE_SYSTEM_NAME=iOS \
     -DCMAKE_OSX_SYSROOT="${sysroot}" \
     -DCMAKE_OSX_ARCHITECTURES="${archs}" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${IOS_DEPLOYMENT_TARGET}" \
     -DBUILD_TESTS=OFF \
     -DBUILD_TESTS_EXTRA=OFF \
     -DBUILD_EXECUTABLES_EXTRA=OFF \
@@ -50,6 +54,7 @@ configure_and_build_macos() {
   cmake -S "${ROOT_DIR}" -B "${build_dir}" \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
+    -DCMAKE_OSX_DEPLOYMENT_TARGET="${MACOS_DEPLOYMENT_TARGET}" \
     -DBUILD_TESTS=OFF \
     -DBUILD_TESTS_EXTRA=OFF \
     -DBUILD_EXECUTABLES_EXTRA=OFF \
@@ -64,7 +69,7 @@ configure_and_build_catalyst_arch() {
   local arch="$1"
   local build_dir="${BUILD_ROOT}/maccatalyst-${arch}"
   local lib_out="${build_dir}/artifacts"
-  local target="${arch}-apple-ios14.0-macabi"
+  local target="${arch}-apple-ios${MACCATALYST_DEPLOYMENT_TARGET}-macabi"
 
   rm -rf "${build_dir}"
 
